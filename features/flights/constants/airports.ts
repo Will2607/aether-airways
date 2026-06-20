@@ -1,0 +1,34 @@
+export interface Airport {
+  code: string;
+  name: string;
+  city: string;
+  country: string;
+}
+
+export const AIRPORTS: Airport[] = [
+  { code: "BOG", city: "Bogotá",        country: "Colombia",        name: "El Dorado International Airport" },
+  { code: "MDE", city: "Medellín",      country: "Colombia",        name: "José María Córdova International Airport" },
+  { code: "CTG", city: "Cartagena",     country: "Colombia",        name: "Rafael Núñez International Airport" },
+  { code: "MIA", city: "Miami",         country: "United States",   name: "Miami International Airport" },
+  { code: "JFK", city: "New York",      country: "United States",   name: "John F. Kennedy International Airport" },
+  { code: "LAX", city: "Los Angeles",   country: "United States",   name: "Los Angeles International Airport" },
+  { code: "ORD", city: "Chicago",       country: "United States",   name: "O'Hare International Airport" },
+  { code: "LHR", city: "London",        country: "United Kingdom",  name: "Heathrow Airport" },
+  { code: "CDG", city: "Paris",         country: "France",          name: "Charles de Gaulle Airport" },
+  { code: "MAD", city: "Madrid",        country: "Spain",           name: "Adolfo Suárez Madrid–Barajas Airport" },
+  { code: "BCN", city: "Barcelona",     country: "Spain",           name: "Josep Tarradellas Barcelona–El Prat Airport" },
+  { code: "FCO", city: "Rome",          country: "Italy",           name: "Leonardo da Vinci International Airport" },
+  { code: "AMS", city: "Amsterdam",     country: "Netherlands",     name: "Amsterdam Airport Schiphol" },
+  { code: "MUC", city: "Munich",        country: "Germany",         name: "Franz Josef Strauss Airport" },
+  { code: "DXB", city: "Dubai",         country: "UAE",             name: "Dubai International Airport" },
+  { code: "NRT", city: "Tokyo",         country: "Japan",           name: "Narita International Airport" },
+  { code: "SIN", city: "Singapore",     country: "Singapore",       name: "Singapore Changi Airport" },
+  { code: "GRU", city: "São Paulo",     country: "Brazil",          name: "Guarulhos International Airport" },
+  { code: "EZE", city: "Buenos Aires",  country: "Argentina",       name: "Ministro Pistarini International Airport" },
+  { code: "MEX", city: "Mexico City",   country: "Mexico",          name: "Benito Juárez International Airport" },
+  { code: "LIM", city: "Lima",          country: "Peru",            name: "Jorge Chávez International Airport" },
+  { code: "SCL", city: "Santiago",      country: "Chile",           name: "Arturo Merino Benítez International Airport" },
+  { code: "CUN", city: "Cancún",        country: "Mexico",          name: "Cancún International Airport" },
+  { code: "SYD", city: "Sydney",        country: "Australia",       name: "Sydney Kingsford Smith Airport" },
+  { code: "YYZ", city: "Toronto",       country: "Canada",          name: "Toronto Pearson International Airport" },
+];

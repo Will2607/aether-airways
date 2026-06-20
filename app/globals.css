@@ -1,26 +1,121 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* ─── Design Tokens ──────────────────────────────────────────────────────── */
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  /* Fonts (inherited from layout.tsx via next/font) */
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* Brand — Aether Blue */
+  --color-aether-50:  #EBF0FF;
+  --color-aether-100: #C7D4FF;
+  --color-aether-200: #9AB3FF;
+  --color-aether-300: #6B8FFF;
+  --color-aether-400: #3D6AFF;
+  --color-aether-500: #1A4BF5;
+  --color-aether-600: #133BD4;
+  --color-aether-700: #0D2CA8;
+  --color-aether-800: #081F7C;
+  --color-aether-900: #041352;
+  --color-aether-950: #020A30;
+
+  /* Brand — Aether Gold */
+  --color-gold-300: #FFE5A0;
+  --color-gold-400: #FFD566;
+  --color-gold-500: #FFC72C;
+  --color-gold-600: #E0A800;
+
+  /* Semantic surface tokens */
+  --color-surface:  #090E18;
+  --color-card:     #111827;
+  --color-elevated: #1F2937;
+
+  /* Custom animations */
+  --animate-bounce-slow: bounce-slow 1.5s ease-in-out infinite;
+  --animate-fade-in-up:  fade-in-up  0.5s ease-out forwards;
+  --animate-shimmer:     shimmer     2s linear infinite;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ─── Keyframes ──────────────────────────────────────────────────────────── */
+
+@keyframes bounce-slow {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(8px); }
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shimmer {
+  from { background-position: 200% center; }
+  to   { background-position: -200% center; }
+}
+
+/* ─── Base layer ─────────────────────────────────────────────────────────── */
+
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    color-scheme: dark;
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: var(--color-surface);
+    color: theme(--color-neutral-50);
+    font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+    min-height: 100dvh;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-aether-500);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Scrollbar — subtle dark style */
+  ::-webkit-scrollbar       { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--color-elevated); border-radius: 3px; }
+
+  /* Screen-reader-only utility */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+  .not-sr-only {
+    position: static;
+    width: auto;
+    height: auto;
+    padding: 0;
+    margin: 0;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ─── Reduced motion ─────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
