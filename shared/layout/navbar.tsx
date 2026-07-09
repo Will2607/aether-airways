@@ -3,14 +3,13 @@
 import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-
 import { cn } from "@/lib/utils";
 import { useScroll } from "@/hooks/use-scroll";
 import { NAV_LINKS } from "@/constants/navigation";
 import { MenuIcon, GlobeIcon } from "@/shared/icons";
 import { buttonVariants } from "@/shared/ui/button";
-import { MobileMenu } from "./mobile-menu";
 import { Logo } from "./logo";
+import { MobileMenu } from "./mobile-menu";
 
 export function Navbar() {
   const { scrolled } = useScroll(60);
@@ -18,7 +17,7 @@ export function Navbar() {
 
   return (
     <>
-      {/* Skip link — first focusable element on the page */}
+      {/* Skip link — first focusable element */}
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-aether-500 focus:text-white focus:rounded-xl focus:text-sm focus:font-medium"
@@ -38,14 +37,14 @@ export function Navbar() {
         )}
       >
         <div className="max-w-7xl mx-auto px-6 lg:px-20">
-          <div className="flex items-center justify-between h-16 lg:h-20">
+          <div className="flex items-center justify-between h-16 lg:h-20 gap-6">
 
             {/* Logo */}
             <Logo size="md" />
 
             {/* Desktop navigation */}
             <nav
-              className="hidden lg:flex items-center gap-1"
+              className="hidden lg:flex items-center gap-0.5 flex-1"
               aria-label="Main navigation"
             >
               {NAV_LINKS.map((link) => (
@@ -56,31 +55,34 @@ export function Navbar() {
             </nav>
 
             {/* Desktop right side */}
-            <div className="hidden lg:flex items-center gap-2">
+            <div className="hidden lg:flex items-center gap-2 shrink-0">
               <button
+                type="button"
                 className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-neutral-400 hover:text-white hover:bg-white/10 text-sm transition-colors"
                 aria-label="Change language"
               >
                 <GlobeIcon className="h-4 w-4" aria-hidden="true" />
-                <span>EN</span>
+                <span className="text-sm">EN</span>
               </button>
 
               <Link
                 href="/auth/login"
                 className={buttonVariants({ variant: "ghost", size: "sm" })}
               >
-                Sign in
+                Login
               </Link>
+
               <Link
-                href="/auth/register"
+                href="/flights"
                 className={buttonVariants({ variant: "primary", size: "sm" })}
               >
-                Get started
+                Book now
               </Link>
             </div>
 
             {/* Mobile hamburger */}
             <button
+              type="button"
               className="lg:hidden p-2 rounded-xl text-neutral-300 hover:text-white hover:bg-white/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aether-500"
               onClick={() => setMobileOpen(true)}
               aria-label="Open navigation menu"
@@ -98,22 +100,17 @@ export function Navbar() {
   );
 }
 
-function NavLink({
-  href,
-  children,
-}: {
-  href: string;
-  children: React.ReactNode;
-}) {
+/* ── NavLink ───────────────────────────────────────────────────────────── */
+
+function NavLink({ href, children }: { href: string; children: React.ReactNode }) {
   return (
     <Link
       href={href}
-      className="group relative px-4 py-2 rounded-xl text-sm font-medium text-neutral-400 hover:text-white transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aether-500"
+      className="group relative px-3.5 py-2 rounded-xl text-sm font-medium text-neutral-400 hover:text-white transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aether-500 whitespace-nowrap"
     >
       {children}
-      {/* Animated underline */}
       <span
-        className="absolute bottom-1.5 left-4 right-4 h-px bg-aether-500 scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-center"
+        className="absolute bottom-1.5 left-3.5 right-3.5 h-px bg-aether-500 scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-center"
         aria-hidden="true"
       />
     </Link>

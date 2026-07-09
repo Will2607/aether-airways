@@ -1,5 +1,6 @@
 import { Navbar } from "@/shared/layout/navbar";
-import { HeroSection } from "@/features/marketing";
+import { Footer } from "@/shared/layout/footer";
+import { HeroSection, FlightSearchSection } from "@/features/marketing";
 
 export default function HomePage() {
   return (
@@ -7,8 +8,9 @@ export default function HomePage() {
       <Navbar />
       <main id="main-content">
         <HeroSection />
-        {/* Next sections: Popular Destinations, Featured Offers, etc. */}
+        <FlightSearchSection />
       </main>
+      <Footer />
     </>
   );
 }

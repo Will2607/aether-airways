@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { XIcon } from "@/shared/icons";
 import { NAV_LINKS } from "@/constants/navigation";
 import { buttonVariants } from "@/shared/ui/button";
-import { PlaneIcon } from "@/shared/icons";
+import { Logo } from "./logo";
 
 interface MobileMenuProps {
   open: boolean;
@@ -25,9 +25,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
-    return () => {
-      document.body.style.overflow = "";
-    };
+    return () => { document.body.style.overflow = ""; };
   }, [open]);
 
   return (
@@ -61,13 +59,9 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
           >
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-5 border-b border-neutral-800">
-              <div className="flex items-center gap-2">
-                <PlaneIcon className="h-5 w-5 text-aether-500" aria-hidden="true" />
-                <span className="font-bold text-white text-sm">
-                  Aether<span className="text-aether-400">Airways</span>
-                </span>
-              </div>
+              <Logo size="sm" />
               <button
+                type="button"
                 onClick={onClose}
                 className="p-2 rounded-lg text-neutral-400 hover:text-white hover:bg-white/10 transition-colors"
                 aria-label="Close navigation menu"
@@ -86,7 +80,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
                   key={link.href}
                   initial={{ opacity: 0, x: 16 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.08 + i * 0.05, duration: 0.3, ease: "easeOut" }}
+                  transition={{ delay: 0.06 + i * 0.05, duration: 0.25 }}
                 >
                   <Link
                     href={link.href}
@@ -99,11 +93,11 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
               ))}
             </nav>
 
-            {/* Auth actions */}
+            {/* Auth */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.35, duration: 0.3 }}
+              transition={{ delay: 0.3, duration: 0.25 }}
               className="p-5 border-t border-neutral-800 space-y-3"
             >
               <Link
@@ -111,14 +105,14 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
                 onClick={onClose}
                 className={buttonVariants({ variant: "secondary", size: "md", className: "w-full justify-center" })}
               >
-                Sign in
+                Login
               </Link>
               <Link
-                href="/auth/register"
+                href="/flights"
                 onClick={onClose}
                 className={buttonVariants({ variant: "primary", size: "md", className: "w-full justify-center" })}
               >
-                Get started
+                Book now
               </Link>
             </motion.div>
           </motion.div>

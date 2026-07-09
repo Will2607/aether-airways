@@ -1,43 +1,39 @@
 "use client";
 
+import Image from "next/image";
+import Link from "next/link";
 import { motion } from "framer-motion";
-import { ChevronDownIcon } from "@/shared/icons";
-import { FlightSearchPanel } from "@/features/flights/components/flight-search-panel";
+import { Badge } from "@/shared/ui/badge";
+import { Typography } from "@/shared/ui/typography";
+import { buttonVariants } from "@/shared/ui/button";
+import { Container } from "@/shared/layout/container";
+import { PlaneIcon } from "@/shared/icons";
+
+/* ── Constants ──────────────────────────────────────────────────────────── */
+
+const HERO_IMAGE =
+  "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1920&q=80";
 
 /* ── Animation variants ─────────────────────────────────────────────────── */
 
-const containerVariants = {
+const container = {
   hidden: {},
-  visible: {
-    transition: { staggerChildren: 0.18, delayChildren: 0.35 },
-  },
+  visible: { transition: { staggerChildren: 0.15, delayChildren: 0.25 } },
 };
 
-const itemVariants = {
-  hidden:   { opacity: 0, y: 24 },
-  visible:  {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.7, ease: [0, 0, 0.2, 1] as const },
-  },
+const item = {
+  hidden:  { opacity: 0, y: 24 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.65, ease: [0, 0, 0.2, 1] as const } },
 };
 
-const panelVariants = {
-  hidden:  { opacity: 0, y: 32 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.7, delay: 0.85, ease: [0, 0, 0.2, 1] as const },
-  },
-};
+/* ── Stars (deterministic SSR-safe) ─────────────────────────────────────── */
 
-/* ── Stars background (deterministic positions to avoid SSR mismatch) ───── */
-const STARS = Array.from({ length: 70 }, (_, i) => ({
+const STARS = Array.from({ length: 40 }, (_, i) => ({
   id:      i,
   cx:      `${((i * 1664525 + 1013904223) % 1000000) / 10000}%`,
-  cy:      `${((i * 22695477 + 1) % 700000) / 10000}%`,
-  r:       i % 5 === 0 ? 1.4 : i % 3 === 0 ? 1.0 : 0.6,
-  opacity: 0.12 + (i % 8) * 0.06,
+  cy:      `${((i * 22695477 + 1) % 600000) / 10000}%`,
+  r:       i % 5 === 0 ? 1.2 : 0.6,
+  opacity: 0.1 + (i % 7) * 0.05,
 }));
 
 /* ── Component ──────────────────────────────────────────────────────────── */
@@ -45,105 +41,127 @@ const STARS = Array.from({ length: 70 }, (_, i) => ({
 export function HeroSection() {
   return (
     <section
-      className="relative min-h-svh flex flex-col"
+      className="relative min-h-svh flex items-center"
       aria-label="AetherAirways — find your next flight"
     >
-      {/* ── Background — overflow-hidden applies only here so popover dropdowns are never clipped ── */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none select-none" aria-hidden="true">
-        {/* Deep space base gradient */}
-        <div className="absolute inset-0 bg-surface" />
+      {/* Background image */}
+      <Image
+        src={HERO_IMAGE}
+        alt="Airplane wing soaring above clouds at golden hour"
+        fill
+        priority
+        className="object-cover object-center"
+        sizes="100vw"
+      />
 
-        {/* Aether glow — top-center radial */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_55%_at_50%_-5%,rgba(26,75,245,0.22),transparent)]" />
+      {/* Overlays */}
+      <div
+        className="absolute inset-0 bg-gradient-to-r from-surface/95 via-surface/65 to-surface/10"
+        aria-hidden="true"
+      />
+      <div
+        className="absolute inset-0 bg-gradient-to-t from-surface via-transparent to-transparent"
+        aria-hidden="true"
+      />
 
-        {/* Secondary ambient glow */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_40%_40%_at_65%_25%,rgba(13,44,168,0.18),transparent)]" />
+      {/* Subtle stars on the dark side */}
+      <svg
+        className="absolute inset-0 w-full h-full pointer-events-none"
+        aria-hidden="true"
+      >
+        {STARS.map((s) => (
+          <circle key={s.id} cx={s.cx} cy={s.cy} r={s.r} fill="white" opacity={s.opacity} />
+        ))}
+      </svg>
 
-        {/* Stars */}
-        <svg
-          className="absolute inset-0 w-full h-full"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          {STARS.map((s) => (
-            <circle key={s.id} cx={s.cx} cy={s.cy} r={s.r} fill="white" opacity={s.opacity} />
-          ))}
-        </svg>
-
-        {/* Horizon line glow */}
-        <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-aether-800/60 to-transparent" />
-
-        {/* Bottom fade to surface */}
-        <div className="absolute inset-x-0 bottom-0 h-56 bg-gradient-to-t from-surface via-surface/80 to-transparent" />
-      </div>
-
-      {/* ── Content ────────────────────────────────────────────────── */}
-      <div className="relative z-10 flex flex-col flex-1 max-w-7xl mx-auto w-full px-6 lg:px-20 pt-36 lg:pt-44 pb-14">
-
-        {/* Headline block */}
+      {/* Content */}
+      <Container size="xl" className="relative z-10 py-36 lg:py-48">
         <motion.div
-          variants={containerVariants}
+          variants={container}
           initial="hidden"
           animate="visible"
-          className="text-center mx-auto max-w-4xl"
+          className="max-w-2xl"
         >
-          {/* Eyebrow label */}
-          <motion.p
-            variants={itemVariants}
-            className="inline-flex items-center gap-2 text-xs font-semibold tracking-[0.3em] uppercase text-aether-400 mb-8"
-          >
-            <span className="h-px w-6 bg-aether-500/60" aria-hidden="true" />
-            Welcome to AetherAirways
-            <span className="h-px w-6 bg-aether-500/60" aria-hidden="true" />
-          </motion.p>
+          {/* Eyebrow badge */}
+          <motion.div variants={item} className="mb-6">
+            <Badge variant="primary" dot>
+              Now with Premium Business Class
+            </Badge>
+          </motion.div>
 
-          {/* Main headline */}
-          <motion.h1
-            variants={itemVariants}
-            className="text-5xl sm:text-6xl lg:text-7xl xl:text-[5.25rem] font-extrabold leading-[1.04] tracking-tight text-white mb-6"
-          >
-            Fly{" "}
-            <em className="not-italic text-gold-500">Beyond</em>
-            <br />
-            the Horizon.
-          </motion.h1>
-
-          {/* Sub-headline */}
-          <motion.p
-            variants={itemVariants}
-            className="text-base lg:text-lg text-neutral-400 max-w-lg mx-auto leading-relaxed"
-          >
-            Discover a new era of travel. Premium flights, seamless booking,
-            and destinations that inspire.
-          </motion.p>
-
-          {/* Scroll indicator */}
-          <motion.div
-            variants={itemVariants}
-            className="mt-12 flex flex-col items-center gap-2.5"
-            aria-hidden="true"
-          >
-            <span className="text-[10px] font-semibold tracking-[0.35em] uppercase text-neutral-700">
-              Explore
-            </span>
-            <motion.div
-              animate={{ y: [0, 6, 0] }}
-              transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+          {/* Headline */}
+          <motion.div variants={item}>
+            <Typography
+              variant="display-2xl"
+              as="h1"
+              className="mb-2 [text-shadow:0_2px_20px_rgba(0,0,0,0.4)]"
             >
-              <ChevronDownIcon className="h-4 w-4 text-neutral-700" />
-            </motion.div>
+              Fly <em className="not-italic text-gold-500">Beyond</em>
+              <br />
+              the Horizon.
+            </Typography>
+          </motion.div>
+
+          {/* Subtitle */}
+          <motion.div variants={item} className="mt-5 mb-10">
+            <Typography variant="body-lg" color="secondary" className="max-w-lg">
+              Discover a new era of air travel. Premium cabins, seamless booking,
+              and destinations that inspire — wherever you dream of going.
+            </Typography>
+          </motion.div>
+
+          {/* CTAs */}
+          <motion.div
+            variants={item}
+            className="flex flex-wrap items-center gap-3"
+          >
+            <Link
+              href="/flights"
+              className={buttonVariants({
+                variant: "primary",
+                size: "lg",
+                className: "gap-2",
+              })}
+            >
+              <PlaneIcon className="h-4 w-4" aria-hidden="true" />
+              Book a Flight
+            </Link>
+            <Link
+              href="/destinations"
+              className={buttonVariants({ variant: "ghost", size: "lg" })}
+            >
+              Explore Destinations
+            </Link>
+          </motion.div>
+
+          {/* Trust indicators */}
+          <motion.div
+            variants={item}
+            className="mt-10 flex items-center gap-6"
+          >
+            {[
+              { value: "150+", label: "Destinations" },
+              { value: "4.9★", label: "App rating" },
+              { value: "2M+",  label: "Happy travellers" },
+            ].map(({ value, label }) => (
+              <div key={label} className="text-center">
+                <Typography variant="mono-lg" color="accent-gold" className="block">
+                  {value}
+                </Typography>
+                <Typography variant="caption" color="muted" className="block mt-0.5">
+                  {label}
+                </Typography>
+              </div>
+            ))}
           </motion.div>
         </motion.div>
+      </Container>
 
-        {/* ── Flight Search Panel ─────────────────────────────────── */}
-        <motion.div
-          variants={panelVariants}
-          initial="hidden"
-          animate="visible"
-          className="mt-auto pt-16 lg:pt-20"
-        >
-          <FlightSearchPanel />
-        </motion.div>
-      </div>
+      {/* Bottom fade */}
+      <div
+        className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-surface to-transparent pointer-events-none"
+        aria-hidden="true"
+      />
     </section>
   );
 }
