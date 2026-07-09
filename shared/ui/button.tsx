@@ -1,109 +1,107 @@
 import { forwardRef } from "react";
+import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
-type ButtonVariant = "primary" | "secondary" | "ghost" | "destructive";
-type ButtonSize = "sm" | "md" | "lg";
+/* ── Variants ───────────────────────────────────────────────────────────── */
+
+export const buttonVariants = cva(
+  [
+    "inline-flex items-center justify-center gap-2 font-medium whitespace-nowrap",
+    "transition-all duration-200 select-none",
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aether-500 focus-visible:ring-offset-2 focus-visible:ring-offset-surface",
+    "disabled:opacity-50 disabled:pointer-events-none",
+  ].join(" "),
+  {
+    variants: {
+      variant: {
+        primary: [
+          "bg-aether-500 text-white",
+          "hover:bg-aether-600",
+          "shadow-[0_0_0_0_rgba(26,75,245,0)] hover:shadow-[0_0_20px_rgba(26,75,245,0.4)]",
+        ].join(" "),
+        secondary: [
+          "bg-elevated text-neutral-100 border border-neutral-700",
+          "hover:bg-neutral-700 hover:border-neutral-500",
+        ].join(" "),
+        outline: [
+          "border border-aether-500 text-aether-400 bg-transparent",
+          "hover:bg-aether-500/10 hover:text-aether-300",
+        ].join(" "),
+        ghost: [
+          "text-neutral-300 bg-transparent",
+          "hover:text-white hover:bg-white/10",
+        ].join(" "),
+        destructive: [
+          "bg-red-600 text-white",
+          "hover:bg-red-700",
+        ].join(" "),
+      },
+      size: {
+        sm:   "h-8 px-3 text-xs rounded-lg",
+        md:   "h-10 px-4 text-sm rounded-xl",
+        lg:   "h-12 px-6 text-base rounded-xl",
+        icon: "h-10 w-10 rounded-xl",
+      },
+    },
+    defaultVariants: {
+      variant: "primary",
+      size: "md",
+    },
+  }
+);
+
+export type ButtonVariants = VariantProps<typeof buttonVariants>;
+
+/* ── Props ──────────────────────────────────────────────────────────────── */
 
 export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: ButtonVariant;
-  size?: ButtonSize;
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+    ButtonVariants {
   isLoading?: boolean;
+  leftIcon?: React.ReactNode;
+  rightIcon?: React.ReactNode;
 }
 
-const variantClasses: Record<ButtonVariant, string> = {
-  primary: [
-    "bg-aether-500 text-white",
-    "hover:bg-aether-600",
-    "shadow-[0_0_0_0_rgba(26,75,245,0)] hover:shadow-[0_0_20px_rgba(26,75,245,0.4)]",
-    "transition-all duration-200",
-  ].join(" "),
-  secondary: [
-    "bg-elevated text-neutral-100 border border-neutral-700",
-    "hover:bg-neutral-700 hover:border-neutral-500",
-    "transition-all duration-200",
-  ].join(" "),
-  ghost: [
-    "text-neutral-300",
-    "hover:text-white hover:bg-white/10",
-    "transition-all duration-200",
-  ].join(" "),
-  destructive: [
-    "bg-red-600 text-white",
-    "hover:bg-red-700",
-    "transition-all duration-200",
-  ].join(" "),
-};
-
-const sizeClasses: Record<ButtonSize, string> = {
-  sm: "h-8 px-3 text-sm rounded-lg gap-1.5",
-  md: "h-10 px-4 text-sm rounded-xl gap-2",
-  lg: "h-12 px-6 text-base rounded-xl gap-2.5",
-};
-
-const baseClasses = [
-  "inline-flex items-center justify-center",
-  "font-medium whitespace-nowrap",
-  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aether-500 focus-visible:ring-offset-2 focus-visible:ring-offset-surface",
-  "disabled:opacity-50 disabled:pointer-events-none",
-  "select-none",
-].join(" ");
-
-/**
- * Generates button class names without rendering an element.
- * Use this to style <Link> components that look like buttons.
- */
-export function buttonVariants({
-  variant = "primary",
-  size = "md",
-  className,
-}: {
-  variant?: ButtonVariant;
-  size?: ButtonSize;
-  className?: string;
-} = {}) {
-  return cn(baseClasses, variantClasses[variant], sizeClasses[size], className);
-}
+/* ── Component ──────────────────────────────────────────────────────────── */
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (
     {
       className,
-      variant = "primary",
-      size = "md",
+      variant,
+      size,
       isLoading = false,
+      leftIcon,
+      rightIcon,
       disabled,
       children,
       ...props
     },
     ref
-  ) => {
-    return (
-      <button
-        ref={ref}
-        disabled={disabled || isLoading}
-        className={cn(
-          baseClasses,
-          variantClasses[variant],
-          sizeClasses[size],
-          className
-        )}
-        {...props}
-      >
-        {isLoading ? (
-          <>
-            <span
-              className="h-4 w-4 rounded-full border-2 border-current border-t-transparent animate-spin"
-              aria-hidden="true"
-            />
-            <span>Loading…</span>
-          </>
-        ) : (
-          children
-        )}
-      </button>
-    );
-  }
+  ) => (
+    <button
+      ref={ref}
+      disabled={disabled || isLoading}
+      className={cn(buttonVariants({ variant, size }), className)}
+      {...props}
+    >
+      {isLoading ? (
+        <>
+          <span
+            className="h-4 w-4 rounded-full border-2 border-current border-t-transparent animate-spin"
+            aria-hidden="true"
+          />
+          <span>Loading…</span>
+        </>
+      ) : (
+        <>
+          {leftIcon && <span aria-hidden="true">{leftIcon}</span>}
+          {children}
+          {rightIcon && <span aria-hidden="true">{rightIcon}</span>}
+        </>
+      )}
+    </button>
+  )
 );
 
 Button.displayName = "Button";

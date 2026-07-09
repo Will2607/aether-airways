@@ -3,12 +3,14 @@
 import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
+
 import { cn } from "@/lib/utils";
 import { useScroll } from "@/hooks/use-scroll";
 import { NAV_LINKS } from "@/constants/navigation";
-import { PlaneIcon, MenuIcon, GlobeIcon } from "@/shared/icons";
+import { MenuIcon, GlobeIcon } from "@/shared/icons";
 import { buttonVariants } from "@/shared/ui/button";
 import { MobileMenu } from "./mobile-menu";
+import { Logo } from "./logo";
 
 export function Navbar() {
   const { scrolled } = useScroll(60);
@@ -39,24 +41,7 @@ export function Navbar() {
           <div className="flex items-center justify-between h-16 lg:h-20">
 
             {/* Logo */}
-            <Link
-              href="/"
-              className="flex items-center gap-2.5 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aether-500 rounded-lg px-1"
-              aria-label="AetherAirways — back to home"
-            >
-              <motion.div
-                whileHover={{ rotate: -15, scale: 1.1 }}
-                transition={{ type: "spring", stiffness: 400, damping: 15 }}
-              >
-                <PlaneIcon
-                  className="h-5 w-5 text-aether-500"
-                  aria-hidden="true"
-                />
-              </motion.div>
-              <span className="font-extrabold text-base text-white tracking-tight">
-                Aether<span className="text-aether-400">Airways</span>
-              </span>
-            </Link>
+            <Logo size="md" />
 
             {/* Desktop navigation */}
             <nav
