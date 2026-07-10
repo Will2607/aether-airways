@@ -5,6 +5,7 @@
  */
 export {
   Plane        as PlaneIcon,
+  ArrowRight   as ArrowRightIcon,
   PlaneTakeoff as PlaneTakeoffIcon,
   PlaneLanding as PlaneLandingIcon,
   ArrowLeftRight as ArrowLeftRightIcon,
