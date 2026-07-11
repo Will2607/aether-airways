@@ -1,9 +1,5 @@
-export interface Airport {
-  code: string;
-  name: string;
-  city: string;
-  country: string;
-}
+export type { Airport } from "@/features/flights/types";
+import type { Airport } from "@/features/flights/types";
 
 export const AIRPORTS: Airport[] = [
   { code: "BOG", city: "Bogotá",        country: "Colombia",        name: "El Dorado International Airport" },
