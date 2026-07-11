@@ -25,7 +25,25 @@ export { useBookingSelection } from "./hooks/use-booking-selection";
 export { computePriceSummary, formatCurrency } from "./utils/booking.utils";
 
 // Components
-export { BookingReviewPage }   from "./components/booking-review-page";
-export { BookingReviewLoader } from "./components/booking-review-loader";
-export { BookingProgress }     from "./components/booking-progress";
-export { BookingEmpty }        from "./components/booking-empty";
+export { BookingReviewPage }      from "./components/booking-review-page";
+export { BookingReviewLoader }    from "./components/booking-review-loader";
+export { PassengersPage }         from "./components/passengers-page";
+export { PassengersPageLoader }   from "./components/passengers-page-loader";
+export { BookingProgress }        from "./components/booking-progress";
+export { BookingEmpty }           from "./components/booking-empty";
+export { BookingSummarySidebar }  from "./components/booking-summary-sidebar";
+
+// Schemas
+export {
+  passengerFormSchema,
+  contactSchema,
+  type PassengerFormPayload,
+  type ContactFormValues,
+  type PassengerFormValues,
+} from "./schemas/passenger-form.schema";
+
+// Services
+export { passengersService } from "./services/passengers.service";
+
+// Hooks
+export { usePassengerData } from "./hooks/use-passenger-data";

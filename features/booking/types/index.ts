@@ -1,6 +1,40 @@
 import type { ID } from "@/types";
 import type { CabinClass, TripType, Fare, FlightResult, FlightOffer } from "@/features/flights/types";
 
+/* ── Passenger Information types (Booking Flow v2) ──────────────────────── */
+
+export type PassengerType  = "adult" | "child" | "infant";
+export type PassengerTitle = "mr" | "ms" | "mrs" | "dr" | "prof";
+export type DocumentType   = "passport" | "national_id" | "drivers_license";
+export type Gender         = "male" | "female" | "other" | "prefer_not_to_say";
+
+export interface ContactDetails {
+  email:       string;
+  countryCode: string;  // e.g. "+57"
+  phone:       string;
+}
+
+export interface PassengerDetails {
+  passengerType:  PassengerType;    // derived from search context, not editable
+  title:          PassengerTitle;
+  firstName:      string;
+  middleName?:    string;
+  lastName:       string;
+  dateOfBirth:    string;           // YYYY-MM-DD
+  gender:         Gender;
+  nationality:    string;           // ISO 3166-1 alpha-2
+  documentType:   DocumentType;
+  documentNumber: string;
+  documentExpiry: string;           // YYYY-MM-DD
+  // frequentFlyer?: FrequentFlyerDetails  ← reserved for future phase
+}
+
+export interface PassengerFormData {
+  contact:    ContactDetails;
+  passengers: PassengerDetails[];
+  savedAt:    string;              // ISO timestamp
+}
+
 /* ── Legacy types (backward compat with existing store/schemas) ─────────── */
 
 export type BookingStep =

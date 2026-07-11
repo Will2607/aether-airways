@@ -1,7 +1,7 @@
 import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 import { Typography } from "@/shared/ui/typography";
-import { InfoIcon, ShieldIcon } from "@/shared/icons";
+import { ShieldIcon } from "@/shared/icons";
 import { formatCurrency } from "@/features/booking/utils/booking.utils";
 import type { BookingPriceSummary } from "@/features/booking/types";
 import type { Fare } from "@/features/flights/types";
@@ -42,9 +42,10 @@ function TaxRow({ label, amount, currency }: { label: string; amount: number; cu
 interface PriceSummaryProps {
   summary: BookingPriceSummary;
   fare: Fare;
+  onContinue?: () => void;
 }
 
-export function PriceSummary({ summary, fare }: PriceSummaryProps) {
+export function PriceSummary({ summary, fare, onContinue }: PriceSummaryProps) {
   const { farePerPerson, currency, passengers, subtotal, taxes, grandTotal } = summary;
 
   return (
@@ -102,18 +103,11 @@ export function PriceSummary({ summary, fare }: PriceSummaryProps) {
       <div className="bg-card border border-neutral-800 rounded-2xl p-5 space-y-3">
         <Button
           variant="primary" size="lg" className="w-full"
-          disabled
-          aria-label="Continue to passenger details — coming soon"
+          onClick={onContinue}
+          aria-label="Continue to passenger details"
         >
           Continue to Passengers
         </Button>
-
-        <div className="flex items-start gap-2">
-          <InfoIcon className="h-3.5 w-3.5 text-neutral-500 shrink-0 mt-0.5" aria-hidden="true" />
-          <Typography variant="caption" color="muted">
-            Passenger details will be available in the next phase of development.
-          </Typography>
-        </div>
       </div>
 
       {/* ── Low seats warning ──────────────────────────────────────── */}

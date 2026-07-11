@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { Container } from "@/shared/layout/container";
 import { Typography } from "@/shared/ui/typography";
 import { useBookingSelection } from "@/features/booking/hooks/use-booking-selection";
@@ -18,6 +19,7 @@ import { BookingEmpty } from "./booking-empty";
  *    client (real selection from sessionStorage).
  */
 export function BookingReviewPage() {
+  const router = useRouter();
   const { selection } = useBookingSelection();
 
   if (!selection) return <BookingEmpty />;
@@ -41,7 +43,11 @@ export function BookingReviewPage() {
 
           <div className="grid lg:grid-cols-[1fr_360px] gap-6 items-start">
             <ItinerarySummary selection={selection} />
-            <PriceSummary summary={summary} fare={selection.fare} />
+                  <PriceSummary
+                    summary={summary}
+                    fare={selection.fare}
+                    onContinue={() => router.push("/booking/passengers")}
+                  />
           </div>
         </Container>
       </div>
