@@ -6,6 +6,10 @@ import {
   PopularDestinationsSection,
   FeaturedOffersSection,
   WhyChooseSection,
+  LoyaltySection,
+  TestimonialsSection,
+  FaqSection,
+  NewsletterSection,
 } from "@/features/marketing";
 
 export default function HomePage() {
@@ -18,6 +22,10 @@ export default function HomePage() {
         <PopularDestinationsSection />
         <FeaturedOffersSection />
         <WhyChooseSection />
+        <LoyaltySection />
+        <TestimonialsSection />
+        <FaqSection />
+        <NewsletterSection />
       </main>
       <Footer />
     </>

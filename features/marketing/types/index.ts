@@ -21,3 +21,21 @@ export interface Offer {
   badge?: string;
   href: string;
 }
+
+export interface Testimonial {
+  id: string;
+  name: string;
+  location: string;
+  tripType: string;
+  rating: number;
+  quote: string;
+  avatarInitials: string;
+  avatarBg: string;
+}
+
+export interface FaqItem {
+  id: string;
+  category: string;
+  question: string;
+  answer: string;
+}

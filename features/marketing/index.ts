@@ -1,5 +1,9 @@
-export { HeroSection }               from "./components/hero-section";
-export { FlightSearchSection }       from "./components/flight-search-section";
+export { HeroSection }                from "./components/hero-section";
+export { FlightSearchSection }        from "./components/flight-search-section";
 export { PopularDestinationsSection } from "./components/popular-destinations-section";
-export { FeaturedOffersSection }     from "./components/featured-offers-section";
-export { WhyChooseSection }          from "./components/why-choose-section";
+export { FeaturedOffersSection }      from "./components/featured-offers-section";
+export { WhyChooseSection }           from "./components/why-choose-section";
+export { LoyaltySection }             from "./components/loyalty-section";
+export { TestimonialsSection }        from "./components/testimonials-section";
+export { FaqSection }                 from "./components/faq-section";
+export { NewsletterSection }          from "./components/newsletter-section";
