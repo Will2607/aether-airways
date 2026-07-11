@@ -12,6 +12,7 @@ interface AirportComboboxProps {
   placeholder?: string;
   label: string;
   id?: string;
+  hasError?: boolean;
 }
 
 export function AirportCombobox({
@@ -21,6 +22,7 @@ export function AirportCombobox({
   placeholder = "City or airport",
   label,
   id,
+  hasError = false,
 }: AirportComboboxProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -105,6 +107,8 @@ export function AirportCombobox({
           "flex items-start gap-2.5 px-4 py-3 rounded-xl bg-elevated border transition-all duration-200 cursor-text",
           open
             ? "border-aether-500 ring-2 ring-aether-500/20"
+            : hasError
+            ? "border-red-500/70 hover:border-red-400"
             : "border-neutral-700 hover:border-neutral-500"
         )}
         onClick={() => inputRef.current?.focus()}

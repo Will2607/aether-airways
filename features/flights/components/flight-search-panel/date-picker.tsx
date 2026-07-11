@@ -17,6 +17,7 @@ interface DatePickerProps {
   placeholder?: string;
   label: string;
   id?: string;
+  hasError?: boolean;
 }
 
 export function DatePicker({
@@ -26,6 +27,7 @@ export function DatePicker({
   placeholder = "Add date",
   label,
   id,
+  hasError = false,
 }: DatePickerProps) {
   const today = new Date();
   const [open, setOpen] = useState(false);
@@ -120,6 +122,8 @@ export function DatePicker({
           "w-full flex items-start gap-2.5 px-4 py-3 rounded-xl bg-elevated border transition-all duration-200 text-left",
           open
             ? "border-aether-500 ring-2 ring-aether-500/20"
+            : hasError
+            ? "border-red-500/70 hover:border-red-400"
             : "border-neutral-700 hover:border-neutral-500"
         )}
       >
