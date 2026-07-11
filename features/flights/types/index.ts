@@ -98,7 +98,12 @@ export interface FlightSearchParams {
   destination: string;
   departureDate: ISODateString;
   returnDate?: ISODateString;
+  /** Total passenger count (adults + children + infants) */
   passengers: number;
+  /** Individual counts — available after parseUrlParams */
+  adults: number;
+  children: number;
+  infants: number;
   cabinClass: CabinClass;
   tripType: TripType;
 }

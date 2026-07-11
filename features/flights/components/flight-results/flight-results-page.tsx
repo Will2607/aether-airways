@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { Container } from "@/shared/layout/container";
 import { useFlightSearch } from "@/features/flights/hooks/use-flight-search";
 import {
@@ -8,14 +9,16 @@ import {
   applyFilters,
   sortFlights,
 } from "@/features/flights/utils/flight.utils";
-import type { FlightActiveFilters, FlightSortOption } from "@/features/flights/types";
-import { FlightResultsHeader }   from "./flight-results-header";
-import { FlightCard }             from "./flight-card";
-import { FlightFilters }          from "./flight-filters";
-import { FlightSort }             from "./flight-sort";
-import { FlightResultsSkeleton }  from "./flight-results-skeleton";
-import { FlightResultsEmpty }     from "./flight-results-empty";
-import { FlightResultsError }     from "./flight-results-error";
+import type { FlightActiveFilters, FlightSortOption, FlightResult, Fare } from "@/features/flights/types";
+import { selectionService } from "@/features/booking/services/selection.service";
+import type { BookingSelection } from "@/features/booking/types";
+import { FlightResultsHeader }  from "./flight-results-header";
+import { FlightCard }            from "./flight-card";
+import { FlightFilters }         from "./flight-filters";
+import { FlightSort }            from "./flight-sort";
+import { FlightResultsSkeleton } from "./flight-results-skeleton";
+import { FlightResultsEmpty }    from "./flight-results-empty";
+import { FlightResultsError }    from "./flight-results-error";
 
 const DEFAULT_FILTERS: FlightActiveFilters = {
   stops: [],
@@ -28,10 +31,11 @@ interface FlightResultsPageProps {
 }
 
 export function FlightResultsPage({ urlParams }: FlightResultsPageProps) {
+  const router = useRouter();
   const searchParams = useMemo(() => parseUrlParams(urlParams), [urlParams]);
 
-  const [filters, setFilters] = useState<FlightActiveFilters>(DEFAULT_FILTERS);
-  const [sort, setSort]       = useState<FlightSortOption>("price_asc");
+  const [filters, setFilters]         = useState<FlightActiveFilters>(DEFAULT_FILTERS);
+  const [sort, setSort]               = useState<FlightSortOption>("price_asc");
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   const { data, isLoading, isError, refetch } = useFlightSearch(searchParams);
@@ -40,6 +44,34 @@ export function FlightResultsPage({ urlParams }: FlightResultsPageProps) {
     if (!data) return [];
     return sortFlights(applyFilters(data.outbound, filters), sort);
   }, [data, filters, sort]);
+
+  /* ── Fare selection ─────────────────────────────────────────────── */
+
+  const handleSelectFare = useCallback((flight: FlightResult, fare: Fare) => {
+    const selection: BookingSelection = {
+      flight,
+      fare,
+      searchContext: {
+        origin:        searchParams.origin,
+        destination:   searchParams.destination,
+        departureDate: searchParams.departureDate,
+        returnDate:    searchParams.returnDate,
+        cabin:         searchParams.cabinClass,
+        passengers: {
+          adults:   searchParams.adults,
+          children: searchParams.children,
+          infants:  searchParams.infants,
+        },
+        tripType: searchParams.tripType,
+      },
+      selectedAt: new Date().toISOString(),
+    };
+
+    selectionService.save(selection);
+    router.push("/booking/review");
+  }, [searchParams, router]);
+
+  /* ── Render ─────────────────────────────────────────────────────── */
 
   return (
     <>
@@ -66,10 +98,8 @@ export function FlightResultsPage({ urlParams }: FlightResultsPageProps) {
           <div
             className={[
               "w-72 shrink-0 transition-all",
-              // Mobile: fixed panel, toggled by button
               "fixed left-0 top-0 bottom-0 z-50 overflow-y-auto bg-surface p-6",
               filtersOpen ? "translate-x-0" : "-translate-x-full",
-              // Desktop: static sidebar, always visible
               "lg:static lg:translate-x-0 lg:z-auto lg:bg-transparent lg:p-0 lg:overflow-visible",
             ].join(" ")}
           >
@@ -108,6 +138,7 @@ export function FlightResultsPage({ urlParams }: FlightResultsPageProps) {
                     key={flight.id}
                     flight={flight}
                     cabinClass={searchParams.cabinClass}
+                    onSelectFare={handleSelectFare}
                   />
                 ))}
             </div>

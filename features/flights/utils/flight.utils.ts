@@ -155,6 +155,9 @@ export function parseUrlParams(
     departureDate: date,
     returnDate,
     passengers: adults + children + infants,
+    adults,
+    children,
+    infants,
     cabinClass,
     tripType,
   };

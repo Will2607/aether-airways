@@ -9,9 +9,11 @@ interface FareOptionProps {
   fare: Fare;
   recommended?: boolean;
   className?: string;
+  /** Called when the user clicks "Select". Defined by the parent orchestrator. */
+  onSelect?: () => void;
 }
 
-export function FareOption({ fare, recommended = false, className }: FareOptionProps) {
+export function FareOption({ fare, recommended = false, className, onSelect }: FareOptionProps) {
   const { brand, price, seatsAvailable } = fare;
   const lowSeat = seatsAvailable <= 4;
 
@@ -93,7 +95,11 @@ export function FareOption({ fare, recommended = false, className }: FareOptionP
           </Typography>
           <Typography variant="caption" color="muted">per person</Typography>
         </div>
-        <Button variant="outline" size="sm" aria-label={`Select ${brand.name} for $${price.amount}`}>
+        <Button
+          variant="outline" size="sm"
+          onClick={onSelect}
+          aria-label={`Select ${brand.name} for $${price.amount}`}
+        >
           Select
         </Button>
       </div>

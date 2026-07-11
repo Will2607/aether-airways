@@ -66,9 +66,11 @@ function SegmentRow({ flight }: { flight: FlightResult }) {
 interface FlightCardProps {
   flight: FlightResult;
   cabinClass: CabinClass;
+  /** Called with the selected fare when the user presses "Select" on a FareOption */
+  onSelectFare?: (flight: FlightResult, fare: import("@/features/flights/types").Fare) => void;
 }
 
-export function FlightCard({ flight, cabinClass }: FlightCardProps) {
+export function FlightCard({ flight, cabinClass, onSelectFare }: FlightCardProps) {
   const first   = flight.legs[0];
   const fares   = flight.fares.filter(
     (f) => f.isAvailable && f.brand.cabinClass === cabinClass
@@ -138,6 +140,7 @@ export function FlightCard({ flight, cabinClass }: FlightCardProps) {
             key={fare.id}
             fare={fare}
             recommended={i === 1 && fares.length >= 2}
+            onSelect={onSelectFare ? () => onSelectFare(flight, fare) : undefined}
           />
         ))}
       </div>
