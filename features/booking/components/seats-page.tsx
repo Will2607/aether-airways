@@ -1,131 +1,153 @@
 "use client";
 
-import Link from "next/link";
+import { useState, useCallback, useEffect, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { Container } from "@/shared/layout/container";
 import { Typography } from "@/shared/ui/typography";
-import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
-import { buttonVariants } from "@/shared/ui/button";
-import { PlaneIcon, ChevronLeftIcon, UsersIcon } from "@/shared/icons";
+import { AlertCircleIcon, ChevronLeftIcon } from "@/shared/icons";
 import { useBookingSelection } from "@/features/booking/hooks/use-booking-selection";
-import { usePassengerData } from "@/features/booking/hooks/use-passenger-data";
-import { formatShortDate } from "@/features/flights/utils/flight.utils";
-import { BookingProgress } from "./booking-progress";
-import { BookingEmpty } from "./booking-empty";
-import { BookingSummarySidebar } from "./booking-summary-sidebar";
+import { usePassengerData }    from "@/features/booking/hooks/use-passenger-data";
+import { seatsService }        from "@/features/booking/services/seats.service";
+import { computePriceSummary } from "@/features/booking/utils/booking.utils";
+import { computeSeatFees }     from "@/features/booking/utils/seat.utils";
+import { MOCK_CABIN_SEAT_MAP } from "@/features/booking/mocks/seat-map.mock";
+import { BookingProgress }           from "./booking-progress";
+import { BookingEmpty }              from "./booking-empty";
+import { SeatMap }                   from "./seat-map/seat-map";
+import { SeatLegend }                from "./seat-map/seat-legend";
+import { PassengerSeatSelector }     from "./passenger-seat-selector";
+import { SeatDetailsPanel }          from "./seat-details-panel";
+import { SeatsPriceSummary }         from "./seats-price-summary";
+import type {
+  Seat,
+  PassengerSeatSelection,
+  PassengerListItem,
+  PassengerDetails,
+} from "@/features/booking/types";
 
-/* ── Seat map placeholder ───────────────────────────────────────────────── */
-
-function SeatMapPlaceholder() {
-  const rows = Array.from({ length: 5 });
-  const cols = ["A", "B", "C", "", "D", "E", "F"];
-
-  return (
-    <div
-      className="relative rounded-2xl border border-neutral-800 bg-card p-6 overflow-hidden"
-      aria-label="Seat map — coming soon"
-      aria-hidden="true"
-    >
-      {/* Nose */}
-      <div className="mx-auto mb-4 w-16 h-8 bg-neutral-800 rounded-t-full" />
-
-      {/* Seat grid */}
-      <div className="space-y-2 select-none pointer-events-none">
-        {rows.map((_, rowIdx) => (
-          <div key={rowIdx} className="flex justify-center gap-1.5">
-            {cols.map((col, colIdx) =>
-              col === "" ? (
-                <div key={colIdx} className="w-7" aria-hidden="true" />
-              ) : (
-                <div
-                  key={colIdx}
-                  className="h-7 w-7 rounded-t-lg bg-neutral-700/60 border border-neutral-600/40 text-[9px] font-mono text-neutral-500 flex items-end justify-center pb-0.5"
-                >
-                  {col}
-                </div>
-              )
-            )}
-          </div>
-        ))}
-      </div>
-
-      {/* Coming soon overlay */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center bg-surface/80 backdrop-blur-sm rounded-2xl">
-        <Badge variant="primary" size="sm" className="mb-3">Coming next phase</Badge>
-        <Typography variant="heading-md" className="text-white text-center">
-          Seat selection
-        </Typography>
-        <Typography variant="caption" color="muted" className="mt-1 text-center max-w-xs">
-          Choose your preferred seat from an interactive cabin map.
-        </Typography>
-      </div>
-    </div>
-  );
-}
-
-/* ── Missing passengers state ───────────────────────────────────────────── */
+/* ── Missing passengers guard ───────────────────────────────────────────── */
 
 function MissingPassengersState() {
+  const router = useRouter();
   return (
     <section className="flex flex-col items-center justify-center min-h-[50vh] text-center px-4 py-16">
-      <div className="mb-6 h-20 w-20 rounded-2xl bg-aether-900/40 border border-aether-800/40 flex items-center justify-center">
-        <UsersIcon className="h-9 w-9 text-aether-400" aria-hidden="true" />
-      </div>
-      <Typography variant="heading-xl" as="h1" className="mb-3">
-        Passenger details missing
-      </Typography>
+      <Typography variant="heading-xl" as="h1" className="mb-3">Passenger details missing</Typography>
       <Typography variant="body" color="secondary" className="max-w-md mb-8">
-        Please complete your passenger information before selecting seats.
+        Please complete passenger information before selecting seats.
       </Typography>
-      <Link
-        href="/booking/passengers"
-        className={buttonVariants({ variant: "primary", size: "lg" })}
-      >
-        <UsersIcon className="h-4 w-4" aria-hidden="true" />
+      <Button variant="primary" size="lg" onClick={() => router.push("/booking/passengers")}>
         Enter passenger details
-      </Link>
+      </Button>
     </section>
   );
 }
 
-/* ── Passenger summary list ─────────────────────────────────────────────── */
+/* ── Passenger label builder ─────────────────────────────────────────────── */
 
-function PassengerSummary({ names }: { names: string[] }) {
-  return (
-    <div className="bg-card border border-neutral-800 rounded-2xl p-5">
-      <div className="flex items-center gap-2 mb-3">
-        <UsersIcon className="h-4 w-4 text-aether-400" aria-hidden="true" />
-        <Typography variant="label-lg" className="font-semibold text-white">
-          Passengers
-        </Typography>
-      </div>
-      <ul className="space-y-1.5">
-        {names.map((name, i) => (
-          <li key={i} className="flex items-center gap-2">
-            <span className="h-1.5 w-1.5 rounded-full bg-aether-400 shrink-0" aria-hidden="true" />
-            <Typography variant="body-sm" color="secondary">{name}</Typography>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
+function buildPassengerList(passengers: PassengerDetails[]): PassengerListItem[] {
+  const counts: Record<string, number> = {};
+  return passengers.map((p, idx) => {
+    const type = p.passengerType;
+    counts[type] = (counts[type] ?? 0) + 1;
+    const typeLabel = type.charAt(0).toUpperCase() + type.slice(1);
+    return {
+      id:    String(idx),
+      label: `${typeLabel} ${counts[type]}`,
+      name:  `${p.firstName} ${p.lastName}`.trim() || "—",
+    };
+  });
 }
 
 /* ── Main page ──────────────────────────────────────────────────────────── */
 
 export function SeatsPage() {
-  const { selection } = useBookingSelection();
-  const { savedData } = usePassengerData();
+  const router              = useRouter();
+  const { selection }       = useBookingSelection();
+  const { savedData }       = usePassengerData();
+
+  /* All hooks declared unconditionally — early returns come after */
+  const [selections, setSelections]           = useState<PassengerSeatSelection[]>(
+    () => seatsService.get()?.selections ?? []
+  );
+  const [activeIdx, setActiveIdx]             = useState(0);
+  const [hoveredSeat, setHoveredSeat]         = useState<Seat | null>(null);
+  const [validationError, setValidationError] = useState(false);
+
+  /* Derived passenger list (empty when savedData is null — guarded below) */
+  const passengerList: PassengerListItem[] = useMemo(
+    () => (savedData ? buildPassengerList(savedData.passengers) : []),
+    [savedData]
+  );
+
+  /* Persist to sessionStorage on every selections change */
+  useEffect(() => {
+    seatsService.save({
+      savedAt:      new Date().toISOString(),
+      selections,
+      totalSeatFee: computeSeatFees(selections),
+    });
+  }, [selections]);
+
+  /* ── Seat selection handler ─────────────────────────────────────────── */
+
+  const handleSelectSeat = useCallback((seat: Seat) => {
+    if (seat.status === "occupied" || seat.status === "blocked") return;
+    setValidationError(false);
+
+    setSelections((prev) => {
+      const passengerId    = String(activeIdx);
+      const pax            = passengerList[activeIdx];
+      const passengerLabel = pax ? `${pax.label} — ${pax.name}` : `Passenger ${activeIdx + 1}`;
+      const existing       = prev.find((s) => s.passengerId === passengerId);
+
+      if (existing?.seatId === seat.id) {
+        return prev.filter((s) => s.passengerId !== passengerId);
+      }
+
+      const filtered = prev.filter(
+        (s) => s.passengerId !== passengerId && s.seatId !== seat.id
+      );
+      const next = [
+        ...filtered,
+        { passengerId, passengerLabel, seatId: seat.id, seatLabel: seat.label, price: seat.price },
+      ];
+
+      const assigned   = new Set(next.map((s) => s.passengerId));
+      const nextIdx    = passengerList.findIndex((_, i) => !assigned.has(String(i)) && i !== activeIdx);
+      if (nextIdx >= 0) setActiveIdx(nextIdx);
+
+      return next;
+    });
+  }, [activeIdx, passengerList]);
+
+  const handleClearSeat = useCallback((passengerId: string) => {
+    setSelections((prev) => prev.filter((s) => s.passengerId !== passengerId));
+  }, []);
+
+  /* ── Guard renders (AFTER all hooks) ───────────────────────────────── */
 
   if (!selection) return <BookingEmpty />;
   if (!savedData)  return <MissingPassengersState />;
 
-  const passengerNames = savedData.passengers.map(
-    (p) => `${p.firstName} ${p.lastName}`.trim() || "—"
-  );
+  const priceSummary = computePriceSummary(selection);
 
-  const firstLeg = selection.flight.legs[0]!;
-  const lastLeg  = selection.flight.legs[selection.flight.legs.length - 1]!;
+  /* ── Continue ───────────────────────────────────────────────────────── */
+
+  function handleContinue() {
+    const allAssigned = passengerList.every((p) =>
+      selections.some((s) => s.passengerId === p.id)
+    );
+    if (!allAssigned) {
+      setValidationError(true);
+      const firstMissing = passengerList.findIndex(
+        (p) => !selections.some((s) => s.passengerId === p.id)
+      );
+      if (firstMissing >= 0) setActiveIdx(firstMissing);
+      return;
+    }
+    router.push("/booking/extras");
+  }
 
   return (
     <>
@@ -133,47 +155,71 @@ export function SeatsPage() {
 
       <div className="min-h-screen bg-surface py-8 pb-16">
         <Container size="lg">
-          {/* Header */}
           <header className="mb-6">
-            <div className="flex items-center gap-2 mb-1">
-              <PlaneIcon className="h-4 w-4 text-aether-400" aria-hidden="true" />
-              <Typography variant="caption" color="secondary">
-                {firstLeg.origin.code} → {lastLeg.destination.code} ·{" "}
-                {formatShortDate(selection.searchContext.departureDate)}
-              </Typography>
-            </div>
-            <Typography variant="heading-xl" as="h1">
-              Choose your seats
-            </Typography>
+            <Typography variant="heading-xl" as="h1">Choose your seats</Typography>
             <Typography variant="body" color="secondary" className="mt-1">
-              Seat selection is coming in the next phase of development.
+              Select a seat for each passenger. Upgrade options are available.
             </Typography>
           </header>
 
           <div className="grid lg:grid-cols-[1fr_320px] gap-6 items-start">
 
-            {/* Left — seat map + back button */}
+            {/* ── Left column ─────────────────────────────────────────── */}
             <div className="space-y-4">
-              <SeatMapPlaceholder />
-              <PassengerSummary names={passengerNames} />
+              <PassengerSeatSelector
+                passengers={passengerList}
+                selections={selections}
+                activeIdx={activeIdx}
+                onSelectPassenger={setActiveIdx}
+                onClearSeat={handleClearSeat}
+              />
+
+              <SeatDetailsPanel seat={hoveredSeat} />
+
+              <SeatMap
+                cabinMap={MOCK_CABIN_SEAT_MAP}
+                selections={selections}
+                onSelectSeat={handleSelectSeat}
+                onHoverSeat={setHoveredSeat}
+              />
+
+              <SeatLegend />
+
+              {validationError && (
+                <div
+                  role="alert"
+                  className="flex items-start gap-3 px-4 py-3 bg-red-950/50 border border-red-800/50 rounded-xl"
+                >
+                  <AlertCircleIcon className="h-4 w-4 text-red-400 mt-0.5 shrink-0" aria-hidden="true" />
+                  <Typography variant="caption" className="text-red-300">
+                    Every passenger must have a seat assigned before continuing.
+                    Please select a seat for the highlighted passenger.
+                  </Typography>
+                </div>
+              )}
 
               <div className="flex gap-3 pt-2">
                 <Button
-                  variant="ghost" size="lg"
-                  onClick={() => history.back()}
+                  variant="ghost"
+                  size="lg"
+                  onClick={() => router.push("/booking/passengers")}
                 >
                   <ChevronLeftIcon className="h-4 w-4" aria-hidden="true" />
                   Back
                 </Button>
-
-                <Button variant="primary" size="lg" disabled className="flex-1 lg:flex-none">
-                  Continue to Payment
+                <Button
+                  variant="primary"
+                  size="lg"
+                  className="flex-1 lg:flex-none"
+                  onClick={handleContinue}
+                >
+                  Continue to Extras
                 </Button>
               </div>
             </div>
 
-            {/* Right — booking summary */}
-            <BookingSummarySidebar selection={selection} />
+            {/* ── Right column ─────────────────────────────────────────── */}
+            <SeatsPriceSummary summary={priceSummary} selections={selections} />
           </div>
         </Container>
       </div>

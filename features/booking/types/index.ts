@@ -118,3 +118,64 @@ export interface BookingPriceSummary {
   totalTaxes: number;
   grandTotal: number;
 }
+
+/* ── Seat Selection types (Booking Flow v3) ─────────────────────────────── */
+
+export type SeatStatus = "available" | "occupied" | "blocked" | "selected";
+export type SeatType   = "standard" | "preferred" | "extra-legroom" | "exit-row";
+
+export interface SeatPrice {
+  amount:   number;
+  currency: string;
+}
+
+export interface Seat {
+  id:          string;   // e.g. "14A"
+  row:         number;
+  column:      string;   // "A" | "B" | "C" | "D" | "E" | "F"
+  label:       string;   // display label, same as id
+  status:      SeatStatus;
+  type:        SeatType;
+  price:       SeatPrice;
+  isWindow:    boolean;
+  isAisle:     boolean;
+  passengerId?: string;  // set when assigned
+}
+
+export interface SeatRow {
+  rowNumber: number;
+  seats:     Seat[];
+  isExitRow: boolean;
+}
+
+export interface CabinSeatMap {
+  aircraftType:  string;
+  totalRows:     number;
+  columns:       string[];
+  leftColumns:   string[];  // ["A","B","C"]
+  rightColumns:  string[];  // ["D","E","F"]
+  rows:          SeatRow[];
+}
+
+/** One passenger → one seat assignment */
+export interface PassengerSeatSelection {
+  passengerId:    string;  // string index: "0", "1", …
+  passengerLabel: string;  // "Adult 1 — John Doe"
+  seatId:         string;  // "14A"
+  seatLabel:      string;  // "14A"
+  price:          SeatPrice;
+}
+
+/** Persisted to sessionStorage under SEATS_STORAGE_KEY */
+export interface SeatSelectionData {
+  savedAt:      string;
+  selections:   PassengerSeatSelection[];
+  totalSeatFee: number;
+}
+
+/** Derived passenger list item used in seat selection UI */
+export interface PassengerListItem {
+  id:    string;  // string index
+  label: string;  // "Adult 1", "Child 1"
+  name:  string;  // "John Doe"
+}

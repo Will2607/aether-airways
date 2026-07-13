@@ -8,30 +8,55 @@ export type {
   BookingSelection, BookingSearchContext,
   BookingPriceSummary, BookingTaxLine,
   PassengerCounts,
+  // Seat types
+  Seat, SeatStatus, SeatType, SeatPrice,
+  SeatRow, CabinSeatMap,
+  PassengerSeatSelection, SeatSelectionData, PassengerListItem,
 } from "./types";
 
 export { type BookingStep } from "./types";
 
 // Constants
-export { BOOKING_STEPS, BOOKING_STORAGE_KEY, type BookingStepId } from "./constants";
+export {
+  BOOKING_STEPS, BOOKING_STORAGE_KEY, PASSENGERS_STORAGE_KEY, SEATS_STORAGE_KEY,
+  type BookingStepId,
+} from "./constants";
 
 // Services
-export { selectionService } from "./services/selection.service";
+export { selectionService }  from "./services/selection.service";
+export { passengersService } from "./services/passengers.service";
+export { seatsService }      from "./services/seats.service";
 
 // Hooks
 export { useBookingSelection } from "./hooks/use-booking-selection";
+export { usePassengerData }    from "./hooks/use-passenger-data";
+export { useSeatsData }        from "./hooks/use-seats-data";
 
 // Utils
 export { computePriceSummary, formatCurrency } from "./utils/booking.utils";
+export { getSeatClasses, buildSeatAriaLabel, computeSeatFees } from "./utils/seat.utils";
+
+// Mocks
+export { MOCK_CABIN_SEAT_MAP } from "./mocks/seat-map.mock";
 
 // Components
-export { BookingReviewPage }      from "./components/booking-review-page";
-export { BookingReviewLoader }    from "./components/booking-review-loader";
-export { PassengersPage }         from "./components/passengers-page";
-export { PassengersPageLoader }   from "./components/passengers-page-loader";
-export { BookingProgress }        from "./components/booking-progress";
-export { BookingEmpty }           from "./components/booking-empty";
-export { BookingSummarySidebar }  from "./components/booking-summary-sidebar";
+export { BookingReviewPage }        from "./components/booking-review-page";
+export { BookingReviewLoader }      from "./components/booking-review-loader";
+export { PassengersPage }           from "./components/passengers-page";
+export { PassengersPageLoader }     from "./components/passengers-page-loader";
+export { SeatsPage }                from "./components/seats-page";
+export { SeatsPageLoader }          from "./components/seats-page-loader";
+export { ExtrasPage }               from "./components/extras-page";
+export { ExtrasPageLoader }         from "./components/extras-page-loader";
+export { BookingProgress }          from "./components/booking-progress";
+export { BookingEmpty }             from "./components/booking-empty";
+export { BookingSummarySidebar }    from "./components/booking-summary-sidebar";
+export { SeatsPriceSummary }        from "./components/seats-price-summary";
+export { PassengerSeatSelector }    from "./components/passenger-seat-selector";
+export { SeatDetailsPanel }         from "./components/seat-details-panel";
+export { SeatMap }    from "./components/seat-map/seat-map";
+export { SeatButton } from "./components/seat-map/seat-button";
+export { SeatLegend } from "./components/seat-map/seat-legend";
 
 // Schemas
 export {
@@ -41,9 +66,3 @@ export {
   type ContactFormValues,
   type PassengerFormValues,
 } from "./schemas/passenger-form.schema";
-
-// Services
-export { passengersService } from "./services/passengers.service";
-
-// Hooks
-export { usePassengerData } from "./hooks/use-passenger-data";

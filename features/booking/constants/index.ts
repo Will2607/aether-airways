@@ -4,12 +4,16 @@ export const BOOKING_STORAGE_KEY = "aether.booking.selection" as const;
 /** sessionStorage key for passenger form data */
 export const PASSENGERS_STORAGE_KEY = "aether.booking.passengers" as const;
 
+/** sessionStorage key for seat selection data */
+export const SEATS_STORAGE_KEY = "aether.booking.seats" as const;
+
 /** Ordered booking flow steps */
 export const BOOKING_STEPS = [
   { id: "select",       label: "Select"     },
   { id: "review",       label: "Review"     },
   { id: "passengers",   label: "Passengers" },
   { id: "seats",        label: "Seats"      },
+  { id: "extras",       label: "Extras"     },
   { id: "payment",      label: "Payment"    },
   { id: "confirmation", label: "Confirm"    },
 ] as const;
