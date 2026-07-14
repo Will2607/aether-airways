@@ -9,7 +9,7 @@ import { AlertCircleIcon, ChevronLeftIcon } from "@/shared/icons";
 import { useBookingSelection } from "@/features/booking/hooks/use-booking-selection";
 import { usePassengerData }    from "@/features/booking/hooks/use-passenger-data";
 import { seatsService }        from "@/features/booking/services/seats.service";
-import { computePriceSummary } from "@/features/booking/utils/booking.utils";
+import { computePriceSummary, buildPassengerList } from "@/features/booking/utils/booking.utils";
 import { computeSeatFees }     from "@/features/booking/utils/seat.utils";
 import { MOCK_CABIN_SEAT_MAP } from "@/features/booking/mocks/seat-map.mock";
 import { BookingProgress }           from "./booking-progress";
@@ -23,7 +23,6 @@ import type {
   Seat,
   PassengerSeatSelection,
   PassengerListItem,
-  PassengerDetails,
 } from "@/features/booking/types";
 
 /* ── Missing passengers guard ───────────────────────────────────────────── */
@@ -41,22 +40,6 @@ function MissingPassengersState() {
       </Button>
     </section>
   );
-}
-
-/* ── Passenger label builder ─────────────────────────────────────────────── */
-
-function buildPassengerList(passengers: PassengerDetails[]): PassengerListItem[] {
-  const counts: Record<string, number> = {};
-  return passengers.map((p, idx) => {
-    const type = p.passengerType;
-    counts[type] = (counts[type] ?? 0) + 1;
-    const typeLabel = type.charAt(0).toUpperCase() + type.slice(1);
-    return {
-      id:    String(idx),
-      label: `${typeLabel} ${counts[type]}`,
-      name:  `${p.firstName} ${p.lastName}`.trim() || "—",
-    };
-  });
 }
 
 /* ── Main page ──────────────────────────────────────────────────────────── */

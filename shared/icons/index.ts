@@ -32,4 +32,8 @@ export {
   Zap          as ZapIcon,
   Heart        as HeartIcon,
   Award        as AwardIcon,
+  Package      as PackageIcon,
+  Utensils     as UtensilsIcon,
+  Coffee       as CoffeeIcon,
+  CreditCard   as CreditCardIcon,
 } from "lucide-react";

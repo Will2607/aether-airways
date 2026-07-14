@@ -179,3 +179,50 @@ export interface PassengerListItem {
   label: string;  // "Adult 1", "Child 1"
   name:  string;  // "John Doe"
 }
+
+/* ── Extras / Upgrades types (Booking Flow v4) ──────────────────────────── */
+
+export type ExtraCategory      = "baggage" | "priority-boarding" | "meal" | "lounge" | "insurance";
+export type ExtraAvailability  = "available" | "soldout" | "unavailable";
+
+export interface BookingExtra {
+  id:                     string;
+  category:               ExtraCategory;
+  name:                   string;
+  description:            string;
+  price:                  number;
+  currency:               string;
+  /** true = must be assigned per passenger; false = applies to the whole booking */
+  selectablePerPassenger: boolean;
+  maxQuantity?:           number;
+  availability:           ExtraAvailability;
+  terms?:                 string;
+}
+
+/** One selection record — ties a passenger (or the booking) to an extra and quantity */
+export interface ExtraSelection {
+  extraId:      string;
+  /** String passenger index ("0","1",...) or "booking" for booking-level extras */
+  passengerId:  string;
+  quantity:     number;
+  /** Snapshot of price at selection time — never mutated after selection */
+  priceAtTime:  number;
+  currency:     string;
+}
+
+/** Persisted to sessionStorage under EXTRAS_STORAGE_KEY */
+export interface ExtrasSelectionData {
+  savedAt:     string;
+  selections:  ExtraSelection[];
+  extrasTotal: number;
+}
+
+/** Derived price breakdown by extra category */
+export interface ExtrasBreakdown {
+  baggageFees:   number;
+  mealFees:      number;
+  priorityFees:  number;
+  loungeFees:    number;
+  insuranceFees: number;
+  extrasTotal:   number;
+}

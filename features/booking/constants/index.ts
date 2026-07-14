@@ -7,6 +7,9 @@ export const PASSENGERS_STORAGE_KEY = "aether.booking.passengers" as const;
 /** sessionStorage key for seat selection data */
 export const SEATS_STORAGE_KEY = "aether.booking.seats" as const;
 
+/** sessionStorage key for extras / upgrades selection */
+export const EXTRAS_STORAGE_KEY = "aether.booking.extras" as const;
+
 /** Ordered booking flow steps */
 export const BOOKING_STEPS = [
   { id: "select",       label: "Select"     },

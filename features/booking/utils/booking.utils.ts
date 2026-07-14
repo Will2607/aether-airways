@@ -1,5 +1,28 @@
-import type { BookingPriceSummary, BookingSelection } from "@/features/booking/types";
+import type {
+  BookingPriceSummary,
+  BookingSelection,
+  PassengerDetails,
+  PassengerListItem,
+} from "@/features/booking/types";
 import { TAX_RATE, AIRPORT_CHARGE_USD } from "@/features/booking/constants";
+
+/**
+ * Build a display-friendly passenger list from raw PassengerDetails.
+ * Shared between Seat Selection and Extras pages.
+ */
+export function buildPassengerList(passengers: PassengerDetails[]): PassengerListItem[] {
+  const counts: Record<string, number> = {};
+  return passengers.map((p, idx) => {
+    const type                = p.passengerType;
+    counts[type]              = (counts[type] ?? 0) + 1;
+    const typeLabel           = type.charAt(0).toUpperCase() + type.slice(1);
+    return {
+      id:    String(idx),
+      label: `${typeLabel} ${counts[type]}`,
+      name:  `${p.firstName} ${p.lastName}`.trim() || "—",
+    };
+  });
+}
 
 /** Format a number as currency (USD by default) */
 export function formatCurrency(amount: number, currency = "USD"): string {
