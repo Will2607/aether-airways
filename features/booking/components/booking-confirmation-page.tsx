@@ -142,14 +142,14 @@ export function BookingConfirmationPage() {
 
         {/* Footer CTA */}
         <div className="flex flex-wrap justify-center gap-3 pt-4">
-          <Link href="/">
+          <Link href={`/my-trips/${confirmation.bookingRef}`}>
             <Button variant="primary" size="lg">
-              Back to home
+              View my trip
             </Button>
           </Link>
-          <Link href="/flights/search">
+          <Link href="/">
             <Button variant="outline" size="lg">
-              Search new flights
+              Back to home
             </Button>
           </Link>
         </div>

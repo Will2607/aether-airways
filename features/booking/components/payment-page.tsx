@@ -20,6 +20,7 @@ import { selectionService } from "@/features/booking/services/selection.service"
 import { passengersService } from "@/features/booking/services/passengers.service";
 import { seatsService } from "@/features/booking/services/seats.service";
 import { extrasService } from "@/features/booking/services/extras.service";
+import { bookingsService } from "@/features/trips/services/bookings.service";
 import { ALL_EXTRAS } from "@/features/booking/mocks/extras.mock";
 import { PaymentForm } from "@/features/booking/components/payment/payment-form";
 import { PaymentSidebar } from "@/features/booking/components/payment/payment-sidebar";
@@ -142,8 +143,10 @@ export function PaymentPage() {
         },
       });
 
-      // Persist confirmation first, then clean up temporary booking data
+      // Persist confirmation first (sessionStorage for /booking/confirmation page)
       confirmationService.save(confirmation);
+      // Also persist to the trips collection (localStorage for /my-trips)
+      bookingsService.save(confirmation);
       try {
         selectionService.clear();
         passengersService.clear();
