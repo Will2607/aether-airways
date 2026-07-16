@@ -6,6 +6,7 @@
 export {
   Plane        as PlaneIcon,
   ArrowRight   as ArrowRightIcon,
+  ArrowLeft    as ArrowLeftIcon,
   PlaneTakeoff as PlaneTakeoffIcon,
   PlaneLanding as PlaneLandingIcon,
   ArrowLeftRight as ArrowLeftRightIcon,
@@ -36,4 +37,9 @@ export {
   Utensils     as UtensilsIcon,
   Coffee       as CoffeeIcon,
   CreditCard   as CreditCardIcon,
+  ShieldCheck  as ShieldCheckIcon,
+  Printer      as PrinterIcon,
+  Loader       as LoaderIcon,
+  CheckCircle  as CheckCircleIcon,
+  Luggage      as LuggageIcon,
 } from "lucide-react";

@@ -226,3 +226,37 @@ export interface ExtrasBreakdown {
   insuranceFees: number;
   extrasTotal:   number;
 }
+
+/* ── Payment & Confirmation types (Booking Flow v5) ─────────────────────── */
+
+/**
+ * Safe payment summary — stored in the booking confirmation.
+ * Never includes full card number or CVC.
+ * In production, tokenization by a PCI-compliant gateway
+ * (e.g., Stripe.js, Braintree) would replace this mock.
+ */
+export interface SafePaymentSummary {
+  method:        "card";
+  brand:         string;   // "visa" | "mastercard" | "amex" | "discover" | "unknown"
+  last4:         string;   // last 4 digits only
+  holder:        string;   // name on card
+  transactionId: string;   // mock: "TXN-1720000000000"
+}
+
+/** Persisted booking confirmation — produced after successful mock payment. */
+export interface BookingConfirmation {
+  bookingRef:      string;    // e.g., "AE7K2P"
+  confirmedAt:     string;    // ISO timestamp
+  status:          "confirmed";
+  selection:       BookingSelection;
+  passengers:      PassengerFormData;
+  seats:           SeatSelectionData;
+  extras:          ExtrasSelectionData | null;
+  priceSummary:    BookingPriceSummary;
+  seatFees:        number;
+  extrasBreakdown: ExtrasBreakdown;
+  grandTotal:      number;
+  currency:        string;
+  /** Contains only safe, non-sensitive payment metadata. */
+  payment:         SafePaymentSummary;
+}

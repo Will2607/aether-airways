@@ -15,6 +15,8 @@ export type {
   // Extras types
   ExtraCategory, ExtraAvailability, BookingExtra,
   ExtraSelection, ExtrasSelectionData, ExtrasBreakdown,
+  // Payment & Confirmation types
+  SafePaymentSummary, BookingConfirmation,
 } from "./types";
 
 export { type BookingStep } from "./types";
@@ -22,26 +24,33 @@ export { type BookingStep } from "./types";
 // Constants
 export {
   BOOKING_STEPS, BOOKING_STORAGE_KEY, PASSENGERS_STORAGE_KEY,
-  SEATS_STORAGE_KEY, EXTRAS_STORAGE_KEY,
+  SEATS_STORAGE_KEY, EXTRAS_STORAGE_KEY, CONFIRMATION_STORAGE_KEY,
   type BookingStepId,
 } from "./constants";
 
 // Services
-export { selectionService }  from "./services/selection.service";
-export { passengersService } from "./services/passengers.service";
-export { seatsService }      from "./services/seats.service";
-export { extrasService }     from "./services/extras.service";
+export { selectionService }    from "./services/selection.service";
+export { passengersService }   from "./services/passengers.service";
+export { seatsService }        from "./services/seats.service";
+export { extrasService }       from "./services/extras.service";
+export { confirmationService } from "./services/confirmation.service";
+export { processMockPayment }  from "./services/payment.service";
+export type { MockPaymentInput, MockPaymentResult } from "./services/payment.service";
 
 // Hooks
 export { useBookingSelection } from "./hooks/use-booking-selection";
 export { usePassengerData }    from "./hooks/use-passenger-data";
 export { useSeatsData }        from "./hooks/use-seats-data";
 export { useExtrasData }       from "./hooks/use-extras-data";
+export { useConfirmation }     from "./hooks/use-confirmation";
 
 // Utils
 export { buildPassengerList, computePriceSummary, formatCurrency } from "./utils/booking.utils";
 export { getSeatClasses, buildSeatAriaLabel, computeSeatFees } from "./utils/seat.utils";
 export { computeExtrasBreakdown, getSelectionQty, isExtraSelected } from "./utils/extras.utils";
+export { formatCardNumber, formatExpiry, detectCardBrand, maskCardNumber, brandLabel } from "./utils/card.utils";
+export { buildBookingConfirmation, generateBookingRef } from "./utils/booking-confirmation.utils";
+export type { BuildConfirmationInput } from "./utils/booking-confirmation.utils";
 
 // Mocks
 export { MOCK_CABIN_SEAT_MAP }                            from "./mocks/seat-map.mock";
@@ -58,6 +67,8 @@ export { ExtrasPage }               from "./components/extras-page";
 export { ExtrasPageLoader }         from "./components/extras-page-loader";
 export { PaymentPage }              from "./components/payment-page";
 export { PaymentPageLoader }        from "./components/payment-page-loader";
+export { BookingConfirmationPage }  from "./components/booking-confirmation-page";
+export { BookingConfirmationLoader } from "./components/booking-confirmation-loader";
 export { ExtraOptionCard }          from "./components/extras/extra-option-card";
 export { ExtraCategorySection }     from "./components/extras/extra-category-section";
 export { ExtrasPriceSummary }       from "./components/extras/extras-price-summary";
@@ -81,3 +92,7 @@ export {
   type ContactFormValues,
   type PassengerFormValues,
 } from "./schemas/passenger-form.schema";
+export {
+  paymentFormSchema,
+  type PaymentFormValues,
+} from "./schemas/payment-form.schema";
