@@ -1,14 +1,21 @@
+import Link from "next/link";
 import { Typography } from "@/shared/ui/typography";
 import { Button } from "@/shared/ui/button";
-import { CheckCircleIcon, PrinterIcon } from "@/shared/icons";
+import { CheckCircleIcon, PrinterIcon, PlaneIcon } from "@/shared/icons";
+import { evaluateEligibility } from "@/features/check-in/utils/eligibility.utils";
+import type { StoredBooking } from "@/features/trips/types";
+import type { CheckInResult } from "@/features/check-in/types";
 
-/**
- * Trip management actions.
- *
- * LIMITATION: Check-in and Manage Booking are disabled placeholders.
- * These features require backend integration (PNR lookup, airline API).
- */
-export function TripActions() {
+interface TripActionsProps {
+  trip?:    StoredBooking;
+  checkIn?: CheckInResult | null;
+}
+
+export function TripActions({ trip, checkIn }: TripActionsProps) {
+  const eligibility = trip ? evaluateEligibility(trip, checkIn ?? undefined) : null;
+  const isEligible    = eligibility?.status === "eligible";
+  const isCheckedIn   = eligibility?.status === "checked_in";
+
   return (
     <section aria-labelledby="trip-actions-heading" className="space-y-4">
       <Typography
@@ -21,24 +28,43 @@ export function TripActions() {
       </Typography>
 
       <div className="flex flex-wrap gap-3">
-        <Button
-          variant="primary"
-          disabled
-          title="Online check-in is not available yet"
-          aria-disabled="true"
-        >
-          <CheckCircleIcon className="mr-2 h-4 w-4" aria-hidden="true" />
-          Online check-in
-          <span className="ml-2 rounded-full bg-white/10 px-1.5 py-0.5 text-xs">
-            Coming soon
-          </span>
-        </Button>
+        {/* Check-in CTA — dynamic based on eligibility */}
+        {isCheckedIn ? (
+          <Link href={`/check-in/${trip!.bookingRef}`}>
+            <Button variant="primary">
+              <PlaneIcon className="mr-2 h-4 w-4" aria-hidden="true" />
+              View boarding passes
+            </Button>
+          </Link>
+        ) : isEligible ? (
+          <Link href={`/check-in?ref=${trip!.bookingRef}`}>
+            <Button variant="primary">
+              <CheckCircleIcon className="mr-2 h-4 w-4" aria-hidden="true" />
+              Check in online
+            </Button>
+          </Link>
+        ) : (
+          <div className="flex flex-col gap-1">
+            <Button
+              variant="primary"
+              disabled
+              aria-disabled="true"
+              title={eligibility?.reason ?? "Check-in is not available for this booking"}
+            >
+              <CheckCircleIcon className="mr-2 h-4 w-4" aria-hidden="true" />
+              Online check-in
+            </Button>
+            {eligibility?.reason && (
+              <p className="text-xs text-neutral-600">{eligibility.reason}</p>
+            )}
+          </div>
+        )}
 
         <Button
           variant="outline"
           disabled
-          title="Booking management is not available yet"
           aria-disabled="true"
+          title="Booking management is not available yet"
         >
           Manage booking
           <span className="ml-2 rounded-full bg-white/5 px-1.5 py-0.5 text-xs text-neutral-500">
@@ -58,10 +84,6 @@ export function TripActions() {
           Print itinerary
         </button>
       </div>
-
-      <p className="text-xs text-neutral-600">
-        Check-in and manage booking features require airline API integration (not implemented in this demo).
-      </p>
     </section>
   );
 }

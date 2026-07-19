@@ -10,13 +10,15 @@ import { PassengersSummary } from "@/features/trips/components/passengers-summar
 import { ExtrasSummary } from "@/features/trips/components/extras-summary";
 import { TripActions } from "@/features/trips/components/trip-actions";
 import { TripNotFound } from "@/features/trips/components/trip-not-found";
+import { useCheckIn } from "@/features/check-in/hooks/use-check-in";
 
 interface TripDetailsPageProps {
   bookingRef: string;
 }
 
 export function TripDetailsPage({ bookingRef }: TripDetailsPageProps) {
-  const { trip } = useTripByRef(bookingRef);
+  const { trip }    = useTripByRef(bookingRef);
+  const { checkIn } = useCheckIn(bookingRef);
 
   if (!trip) {
     return (
@@ -108,7 +110,7 @@ export function TripDetailsPage({ bookingRef }: TripDetailsPageProps) {
         <hr className="border-neutral-800" />
 
         {/* Actions */}
-        <TripActions />
+        <TripActions trip={trip} checkIn={checkIn} />
       </div>
     </div>
   );
