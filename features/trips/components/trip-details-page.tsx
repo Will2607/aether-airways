@@ -11,6 +11,7 @@ import { ExtrasSummary } from "@/features/trips/components/extras-summary";
 import { TripActions } from "@/features/trips/components/trip-actions";
 import { TripNotFound } from "@/features/trips/components/trip-not-found";
 import { useCheckIn } from "@/features/check-in/hooks/use-check-in";
+import { ManageBookingSuccessBanner } from "@/features/manage-booking/components/manage-booking-success-banner";
 
 interface TripDetailsPageProps {
   bookingRef: string;
@@ -36,6 +37,9 @@ export function TripDetailsPage({ bookingRef }: TripDetailsPageProps) {
       <TripDetailsHeader trip={trip} />
 
       <div className="mx-auto max-w-4xl space-y-10 px-4 py-8 sm:px-6 lg:px-8">
+        {/* Modification success banner */}
+        <ManageBookingSuccessBanner bookingRef={bookingRef} />
+
         {/* Itinerary */}
         <section aria-labelledby="trip-itinerary-heading">
           <Typography

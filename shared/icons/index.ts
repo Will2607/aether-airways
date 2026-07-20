@@ -42,4 +42,5 @@ export {
   Loader       as LoaderIcon,
   CheckCircle  as CheckCircleIcon,
   Luggage      as LuggageIcon,
+  Settings     as SettingsIcon,
 } from "lucide-react";

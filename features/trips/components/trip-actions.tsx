@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { Typography } from "@/shared/ui/typography";
 import { Button } from "@/shared/ui/button";
-import { CheckCircleIcon, PrinterIcon, PlaneIcon, PlaneIcon as FlightStatusIcon } from "@/shared/icons";
+import { CheckCircleIcon, PrinterIcon, PlaneIcon, PlaneIcon as FlightStatusIcon, SettingsIcon } from "@/shared/icons";
 import { evaluateEligibility } from "@/features/check-in/utils/eligibility.utils";
+import { evaluateManageBookingEligibility } from "@/features/manage-booking/utils/eligibility.utils";
 import { urlSafeFlightNumber } from "@/features/flight-status/utils/flight-status.utils";
 import type { StoredBooking } from "@/features/trips/types";
 import type { CheckInResult } from "@/features/check-in/types";
@@ -13,9 +14,11 @@ interface TripActionsProps {
 }
 
 export function TripActions({ trip, checkIn }: TripActionsProps) {
-  const eligibility = trip ? evaluateEligibility(trip, checkIn ?? undefined) : null;
-  const isEligible    = eligibility?.status === "eligible";
-  const isCheckedIn   = eligibility?.status === "checked_in";
+  const eligibility    = trip ? evaluateEligibility(trip, checkIn ?? undefined) : null;
+  const isEligible     = eligibility?.status === "eligible";
+  const isCheckedIn    = eligibility?.status === "checked_in";
+
+  const manageEligibility = trip ? evaluateManageBookingEligibility(trip, checkIn) : null;
 
   // Flight number from first leg for Flight Status link
   const firstLegFlightNumber = trip?.selection.flight.legs[0]?.flightNumber;
@@ -67,17 +70,30 @@ export function TripActions({ trip, checkIn }: TripActionsProps) {
           </div>
         )}
 
-        <Button
-          variant="outline"
-          disabled
-          aria-disabled="true"
-          title="Booking management is not available yet"
-        >
-          Manage booking
-          <span className="ml-2 rounded-full bg-white/5 px-1.5 py-0.5 text-xs text-neutral-500">
-            Coming soon
-          </span>
-        </Button>
+        {/* Manage booking */}
+        {manageEligibility?.canModify ? (
+          <Link href={`/my-trips/${trip!.bookingRef}/manage`}>
+            <Button variant="outline">
+              <SettingsIcon className="mr-2 h-4 w-4" aria-hidden="true" />
+              Manage booking
+            </Button>
+          </Link>
+        ) : (
+          <div className="flex flex-col gap-1">
+            <Button
+              variant="outline"
+              disabled
+              aria-disabled="true"
+              title={manageEligibility?.reason ?? "Manage booking is not available"}
+            >
+              <SettingsIcon className="mr-2 h-4 w-4" aria-hidden="true" />
+              Manage booking
+            </Button>
+            {manageEligibility?.reason && (
+              <p className="text-xs text-neutral-600">{manageEligibility.reason}</p>
+            )}
+          </div>
+        )}
 
         {/* Flight status */}
         <Link href={flightStatusHref}>
