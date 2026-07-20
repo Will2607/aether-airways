@@ -4,11 +4,12 @@ export interface NavLink {
 }
 
 export const NAV_LINKS: NavLink[] = [
-  { label: "Flights",      href: "/flights"          },
-  { label: "Destinations", href: "/destinations"     },
-  { label: "Offers",       href: "/offers"           },
-  { label: "Check-in",     href: "/check-in"         },
-  { label: "My Trips",     href: "/my-trips"          },
+  { label: "Flights",        href: "/flights"        },
+  { label: "Destinations",   href: "/destinations"   },
+  { label: "Offers",         href: "/offers"         },
+  { label: "Flight Status",  href: "/flight-status"  },
+  { label: "Check-in",       href: "/check-in"       },
+  { label: "My Trips",       href: "/my-trips"       },
 ];
 
 export const FOOTER_LINKS = {

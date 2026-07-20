@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { Typography } from "@/shared/ui/typography";
 import { Button } from "@/shared/ui/button";
-import { CheckCircleIcon, PrinterIcon, PlaneIcon } from "@/shared/icons";
+import { CheckCircleIcon, PrinterIcon, PlaneIcon, PlaneIcon as FlightStatusIcon } from "@/shared/icons";
 import { evaluateEligibility } from "@/features/check-in/utils/eligibility.utils";
+import { urlSafeFlightNumber } from "@/features/flight-status/utils/flight-status.utils";
 import type { StoredBooking } from "@/features/trips/types";
 import type { CheckInResult } from "@/features/check-in/types";
 
@@ -15,6 +16,12 @@ export function TripActions({ trip, checkIn }: TripActionsProps) {
   const eligibility = trip ? evaluateEligibility(trip, checkIn ?? undefined) : null;
   const isEligible    = eligibility?.status === "eligible";
   const isCheckedIn   = eligibility?.status === "checked_in";
+
+  // Flight number from first leg for Flight Status link
+  const firstLegFlightNumber = trip?.selection.flight.legs[0]?.flightNumber;
+  const flightStatusHref     = firstLegFlightNumber
+    ? `/flight-status/${urlSafeFlightNumber(firstLegFlightNumber)}`
+    : "/flight-status";
 
   return (
     <section aria-labelledby="trip-actions-heading" className="space-y-4">
@@ -71,6 +78,14 @@ export function TripActions({ trip, checkIn }: TripActionsProps) {
             Coming soon
           </span>
         </Button>
+
+        {/* Flight status */}
+        <Link href={flightStatusHref}>
+          <Button variant="outline">
+            <FlightStatusIcon className="mr-2 h-4 w-4" aria-hidden="true" />
+            Flight status
+          </Button>
+        </Link>
 
         <button
           type="button"

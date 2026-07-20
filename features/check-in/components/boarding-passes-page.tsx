@@ -5,6 +5,7 @@ import { Typography } from "@/shared/ui/typography";
 import { Button } from "@/shared/ui/button";
 import { useCheckIn } from "@/features/check-in/hooks/use-check-in";
 import { BoardingPassCard } from "@/features/check-in/components/boarding-pass-card";
+import { urlSafeFlightNumber } from "@/features/flight-status/utils/flight-status.utils";
 
 interface BoardingPassesPageProps {
   bookingRef: string;
@@ -80,6 +81,14 @@ export function BoardingPassesPage({ bookingRef }: BoardingPassesPageProps) {
             <PrinterIcon className="h-4 w-4" aria-hidden="true" />
             Print boarding passes
           </button>
+          {firstPass && (
+            <Link href={`/flight-status/${urlSafeFlightNumber(firstPass.flightNumber)}`}>
+              <Button variant="outline" size="sm">
+                <PlaneIcon className="mr-1.5 h-3.5 w-3.5" aria-hidden="true" />
+                View flight status
+              </Button>
+            </Link>
+          )}
           <Link href={`/my-trips/${bookingRef}`}>
             <Button variant="outline" size="sm">View trip</Button>
           </Link>
